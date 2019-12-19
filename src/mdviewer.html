@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>Marked in the browser</title>
+  <style>
+    html {
+      width: auto;
+    }
+
+    div.main_pane {
+      display: block;
+      overflow: scroll;
+      white-space: nowrap;
+    }
+
+    #editor {
+      margin-top: 2em;
+    }
+
+    div.sub_pane {
+      display: inline-block;
+      width: 500px;
+      vertical-align: top;
+    }
+
+    #content {
+      display: inline-block;
+      width: 297mm;
+      overflow-x: visible;
+    }
+
+    #content_parent {
+      max-width: 100%;
+      white-space: normal;
+    }
+
+    img {
+      max-width: 100%;
+    }
+
+    #content p {
+      max-width: 100%;
+      word-wrap: break-word;
+    }
+    
+    #content pre {
+      max-width: 100%;
+      white-space: pre-wrap;
+    }
+    
+    div.header {
+      width: 480px;
+      height: 20px;
+      background-color: #3080ff;
+    }
+
+    div.sleep {
+      display: none;
+    }
+  </style>
+  <style>
+      @import url('markdown.css');
+
+      div.main_pane > div.menu_pane {
+        display:none;
+      }
+    </style>
+  </head>
+
+<body>
+  <div class="main_pane">
+    <div class="sub_pane" id="content">
+      <div id="content_parent"><h1 id="marked-in-the-browser">Marked in the browser</h1>
+<p>Rendered by <strong>marked</strong>.</p>
+</div>
+    </div>
+  </div>
+  <script src="marked.js"></script>
+  <script src="mdviewer.js"></script>
+</body></html>

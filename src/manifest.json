@@ -1,0 +1,24 @@
+{
+
+    "manifest_version": 2,
+    "name": "Knoledge Suite Markdown Plus",
+    "version": "1.1.2",
+   
+    "description": "Markdownビュワーを追加してみる.",
+    
+    "icons": {
+      "48": "icons/article-48.png"
+    },
+  
+    "content_scripts": [
+      {
+        "matches": ["https://gridy.jp/message/show*","https://*.saml.gridy.jp/message/show*","file:///*TestPage.html"],
+        "js": ["add_button.js"]
+      }
+    ],
+
+    "background": {
+      "scripts": ["background.js"]
+    }
+  
+}
