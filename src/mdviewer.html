@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html><head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<html>
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta charset="utf-8">
   <title>Marked in the browser</title>
   <style>
@@ -43,12 +45,12 @@
       max-width: 100%;
       word-wrap: break-word;
     }
-    
+
     #content pre {
       max-width: 100%;
       white-space: pre-wrap;
     }
-    
+
     div.header {
       width: 480px;
       height: 20px;
@@ -60,22 +62,27 @@
     }
   </style>
   <style>
-      @import url('markdown.css');
+    @import url('markdown.css');
 
-      div.main_pane > div.menu_pane {
-        display:none;
-      }
-    </style>
-  </head>
+    div.main_pane>div.menu_pane {
+      display: none;
+    }
+  </style>
+</head>
 
 <body>
   <div class="main_pane">
     <div class="sub_pane" id="content">
-      <div id="content_parent"><h1 id="marked-in-the-browser">Marked in the browser</h1>
-<p>Rendered by <strong>marked</strong>.</p>
-</div>
+      <div id="content_parent">
+        <p>
+          使用しているライブラリとそのライセンスなどは<a href="license.html">こちら</a>
+        </p>
+      </div>
     </div>
   </div>
-  <script src="marked.js"></script>
+  <script src="lib/marked.js"></script>
+  <script src="lib/purify.js"></script>
   <script src="mdviewer.js"></script>
-</body></html>
+</body>
+
+</html>

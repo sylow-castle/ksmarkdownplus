@@ -4,15 +4,15 @@ polling();
 
 function polling() {
     const importTarget = document.querySelectorAll('div.comment_box div.boxhead > div.h');
-    if(importTarget.length > 0) {
-        console.log(importTarget.length);
+    if (importTarget.length > 0) {
         main(engine, document);
     } else {
-        setTimeout(polling, 500);
+        setTimeout(polling, 100);
     }
 }
 
 function main(browser, document) {
+    var cancelTaskId = null;
     console.log("start");
     const importTarget = document.querySelectorAll('div.comment_box div.boxhead > div.h');
     const config = {
@@ -20,7 +20,15 @@ function main(browser, document) {
         "sender": "sendMessage"
     }
     importButtons();
-    newWindow(0, "markdown!");
+    browser.runtime.onMessage.addListener(notify);
+
+    var replyHandler = function (id, result) {
+        console.log("do nothing");
+        //何もしない
+    };
+    //newWindow(0, "markdown!");
+
+
 
     function importButtons() {
         const commentQuery = 'div.boxbody p';
@@ -34,6 +42,7 @@ function main(browser, document) {
             const id = buttonElem.dataset.ksMdPlustCommentId
             const text = getComment(elem).replace(/<br>/g, "\n");
             buttonElem.addEventListener('click', function () {
+                MDViewerCheck();
                 sender(id, text);
             });
 
@@ -42,26 +51,26 @@ function main(browser, document) {
         function createMDButton(index) {
             const port = document.createElement('span');
             port.classList.add('ks_md_plus_port');
-    
+
             /* portの中にこんな要素を作る
              * <span class="main_menu">
              *     <a class="ks_md_plus btn_blue">MD Viewer</a>
              * </span>
              */
-    
+
             const area = document.createElement('span');
             area.classList.add('main_menu');
-    
+
             const button = document.createElement('a');
             button.classList.add('btn_blue')
             button.classList.add('ks_md_plust_open_md_view')
             button.textContent = "MD Viewer";
-            
-    
+
+
             area.appendChild(button);
             port.setAttribute('data-ks-md-plus-comment-id', index);
             port.appendChild(area);
-    
+
             return port;
         }
 
@@ -79,8 +88,7 @@ function main(browser, document) {
                 logComment();
                 break;
             case "sendMessage":
-            console.log("sendMessage: id:" + commentId + ",text :" + text);
-                sendComment(0, text);
+                sendComment("MDViewer", text);
                 break;
         }
 
@@ -98,7 +106,7 @@ function main(browser, document) {
 
     let taskId = null;
     function sendComment(id, text) {
-        browser.runtime.sendMessage({ "command": "sendComment", "id": id, "text": text});
+        browser.runtime.sendMessage({ "command": "sendComment", "id": id, "text": text });
         /*
         taskId = setTimeout(function() {
             newWindow(id)
@@ -106,8 +114,8 @@ function main(browser, document) {
         */
     }
 
-    function newWindow(id, text) {
-        browser.runtime.sendMessage({"command": "newWindow", "id": id});
+    function newWindow(id) {
+        browser.runtime.sendMessage({ "command": "newWindow", "id": id });
         //browser.runtime.sendMessage({"command": "sendComment", "id": id, "text": text});
     }
 
@@ -115,10 +123,55 @@ function main(browser, document) {
         clearTimeout(taskId);
     }
 
-    /* sendMessageのプロトコル：バックグラウンドの各ウィンドウへのブロードキャストなので注意
-     * Discoverメッセージ：指定したIDのウィンドウが確認する。
-     * 各ウィンドウが受信：Reply返信
-     * 返信がない（まだウィンドウがない）ときはNewWindowメッセージを送る。
-     * 改めてDiscoverメッセージを送信。
-     */
+    function MDViewerCheck(id, text) {
+        const mdViewer = "MDViewer";
+        checkWindow(mdViewer);
+
+        replyHandler = function (id, result) {
+            console.log("called discoverHandler");
+            console.log(result);
+            if (result) {
+                sender(mdViewer, text);
+                browser.runtime.sendMessage({"command": "focusWindow", "id": mdViewer});
+            } else {
+                newWindow(mdViewer);
+            }
+        }
+
+    }
+
+    function checkWindow(id) {
+        cancelTaskId = setTimeout(function() {
+            console.log("not exist Window");
+            console.log(cancelTaskId);
+            releasedId(id);
+        }, 500);
+        const tabId = 0
+        //browser.tabs.getCurrent().id;
+        console.log(tabId);
+        browser.runtime.sendMessage({ "command": "discoverWindow", "id": id, "tabId":tabId ,"cancelTaskId": cancelTaskId });
+    }
+
+    function releasedId(id) {
+        cancelTaskId = null;
+        replyHandler(id, false);
+    }
+
+
+    function notify(message, sender, sendResponse) {
+        console.log(message);
+        switch (message.command) {
+            case "replyWindow":
+                console.log("replyWindow");
+                if (cancelTaskId === message.cancelTaskId) {
+                    cancelTaskId = null;
+                    clearTimeout(message.cancelTaskId);
+                    replyHandler(message.id, true);
+                }
+                break;
+            default:
+                break;
+        }
+
+    }
 }

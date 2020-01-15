@@ -14,10 +14,14 @@ envir.type = type;
 
 (function (browser) {
   browser.runtime.onMessage.addListener(notify);
+  let mdViewer = "uncreated";
+  return;
 
   function notify(message) {
+    console.log(message.command);
     switch (message.command) {
-      case "sendComment":
+      case "focusWindow":
+        readyMdViewr(mdViewer);
         break;
       case "newWindow":
         var createData = {
@@ -26,11 +30,24 @@ envir.type = type;
           width: 640,
           height: 480
         };
-        var creating = browser.windows.create(createData);
+        browser.windows.create(createData, function(window) {
+          mdViewer = window.id;
+        });
+        console.log(mdViewer);
         break;
 
       default:
         return;
     }
   }
+
+  function readyMdViewr(windowId) {
+    if(windowId !== "uncreated") {
+      browser.windows.update(windowId, {"focused": true}, noop);
+    }
+  }
+
+  function noop(window) {
+  }
+
 })(typeof browser === 'undefined' ? chrome : browser);
